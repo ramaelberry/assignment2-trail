@@ -150,8 +150,9 @@ function displayExercises(exercises, container) {
     }
     
     console.log('Displaying exercises:', exercises);
+    console.log('First exercise structure:', exercises[0]);
     
-    // Create exercise cards with proper styling
+    // Create exercise list with proper styling
     exercises.forEach((exercise, index) => {
         // Extract exercise name from the API response
         let exerciseName = 'Unnamed Exercise';
@@ -166,6 +167,8 @@ function displayExercises(exercises, container) {
                           `Exercise ${index + 1}`;
         }
         
+        console.log(`Exercise ${index + 1}:`, exerciseName);
+        
         // Create exercise card
         const card = document.createElement('div');
         card.style.cssText = `
@@ -175,6 +178,7 @@ function displayExercises(exercises, container) {
             border-left: 4px solid var(--primary-blue);
             border-radius: 8px;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
         `;
         
         card.innerHTML = `
@@ -199,8 +203,24 @@ function displayExercises(exercises, container) {
                         ${escapeHtml(exerciseName)}
                     </div>
                     ${exercise.description ? `
-                        <div style="color: var(--text-light); font-size: 0.85rem; margin-top: 0.25rem;">
-                            ${escapeHtml(stripHtmlTags(exercise.description)).substring(0, 100)}...
+                        <div style="color: var(--text-light); font-size: 0.85rem; margin-top: 0.25rem; line-height: 1.4;">
+                            ${escapeHtml(stripHtmlTags(exercise.description)).substring(0, 120)}${exercise.description.length > 120 ? '...' : ''}
+                        </div>
+                    ` : ''}
+                    ${exercise.category && exercise.category.name ? `
+                        <div style="margin-top: 0.5rem;">
+                            <span style="
+                                display: inline-block;
+                                padding: 0.25rem 0.75rem;
+                                background: white;
+                                border: 1px solid var(--primary-blue);
+                                color: var(--primary-blue);
+                                border-radius: 12px;
+                                font-size: 0.75rem;
+                                font-weight: 600;
+                            ">
+                                ${escapeHtml(exercise.category.name)}
+                            </span>
                         </div>
                     ` : ''}
                 </div>
@@ -231,8 +251,9 @@ function displayExercises(exercises, container) {
         border-radius: 8px;
         font-size: 0.9rem;
         text-align: center;
+        font-weight: 500;
     `;
-    successMsg.innerHTML = '✓ Exercises loaded successfully from Wger API';
+    successMsg.innerHTML = '✓ Successfully loaded 5 exercises from Wger API';
     container.appendChild(successMsg);
 }
 
