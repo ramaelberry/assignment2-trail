@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Wger API</title>
+</head>
+<body>
+    <h1>Testing Wger API</h1>
+    <button onclick="testAPI()">Test API</button>
+    <div id="results"></div>
+    
+    <script>
+        function testAPI() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>Testing API...</p>';
+            
+            fetch("https://wger.de/api/v2/exercise/?language=2&limit=50")
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    console.log('Response ok:', response.ok);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Full API Response:', data);
+                    console.log('Results array:', data.results);
+                    console.log('First exercise:', data.results[0]);
+                    
+                    const fiveExercises = data.results.slice(0, 5);
+                    console.log('Five exercises:', fiveExercises);
+                    
+                    resultsDiv.innerHTML = `
+                        <h2>API Test Results:</h2>
+                        <p>Total exercises: ${data.results.length}</p>
+                        <h3>First 5 Exercises:</h3>
+                        <ul>
+                            ${fiveExercises.map(ex => `<li>${ex.name || 'No name'}</li>`).join('')}
+                        </ul>
+                        <h3>First Exercise Structure:</h3>
+                        <pre>${JSON.stringify(data.results[0], null, 2)}</pre>
+                    `;
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    resultsDiv.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+                });
+        }
+    </script>
+</body>
+</html>
+

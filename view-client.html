@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Client - Fitness CRM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .client-details {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .detail-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .detail-value {
+            color: var(--text-dark);
+        }
+        
+        .training-history {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .history-item {
+            padding: 1rem;
+            border-left: 3px solid var(--primary-blue);
+            margin-bottom: 1rem;
+            background: var(--bg-light-blue);
+        }
+        
+        .history-date {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .history-notes {
+            color: var(--text-light);
+        }
+        
+        .exercises-section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+        
+        .exercise-card {
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .exercise-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .exercise-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+        }
+        
+        .error-message {
+            padding: 1rem;
+            background: #FEF2F2;
+            border: 1px solid var(--danger-red);
+            border-radius: 8px;
+            color: var(--danger-red);
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="header">
+            <div class="header-brand">
+                <div class="logo">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                        <path d="M15.31 15.31 8.69 8.69"></path>
+                        <path d="M15.31 8.69 8.69 15.31"></path>
+                        <path d="M12 2v20"></path>
+                        <path d="M2 12h20"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1>Fitness CRM</h1>
+                    <p>Client Details</p>
+                </div>
+            </div>
+            <a href="index.html" class="btn-add-client">← Back to Dashboard</a>
+        </header>
+
+        <main class="main-content">
+            <div id="clientDetails" class="client-details">
+                <div class="loading">Loading client details...</div>
+            </div>
+
+            <div class="training-history">
+                <h2 style="margin-bottom: 1.5rem;">Training History</h2>
+                <div id="trainingHistoryList">
+                    <div class="loading">Loading training history...</div>
+                </div>
+            </div>
+
+            <div class="exercises-section">
+                <h2 style="margin-bottom: 1.5rem;">Suggested Exercises for Next Session</h2>
+                <div id="exercisesList">
+                    <div class="loading">Loading exercises...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/view-client.js"></script>
+</body>
+</html>
+
