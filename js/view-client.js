@@ -93,16 +93,16 @@ function renderTrainingHistory(history) {
 
 /**
  * Load exercises from API
- * Follows the assignment steps exactly
  */
 function loadExercises() {
     const container = document.getElementById('exercisesList');
     if (!container) return;
     
-    container.innerHTML = '<div class="loading">Fetching exercises from API...</div>';
+    container.innerHTML = '<div class="loading">Fetching exercises from Wger API...</div>';
     
     // Check cache first
     if (window.cachedExercises && window.cachedExercises.length > 0) {
+        console.log('Using cached exercises');
         displayExercises(window.cachedExercises, container);
         return;
     }
@@ -124,7 +124,6 @@ function loadExercises() {
                     }
                 }
             } else {
-                // API failed - show error message with fallback
                 console.warn('API returned no exercises, showing fallback');
                 showFallbackExercises(container);
             }
@@ -136,8 +135,8 @@ function loadExercises() {
 }
 
 /**
- * Display exercises on the page
- * @param {Array} exercises - Array of exercise objects
+ * Display exercises on the page with proper styling
+ * @param {Array} exercises - Array of exercise objects from Wger API
  * @param {HTMLElement} container - Container element
  */
 function displayExercises(exercises, container) {
@@ -146,40 +145,107 @@ function displayExercises(exercises, container) {
     
     // Validate exercises array
     if (!exercises || !Array.isArray(exercises) || exercises.length === 0) {
-        container.innerHTML = '<li>Could not load exercises. Please add exercises manually.</li>';
+        container.innerHTML = '<p style="color: var(--text-light);">Could not load exercises. Please add exercises manually.</p>';
         return;
     }
     
-    // Create a list
-    const ul = document.createElement('ul');
-    ul.style.listStyle = 'none';
-    ul.style.padding = '0';
-    ul.style.margin = '0';
+    console.log('Displaying exercises:', exercises);
     
-    exercises.forEach((ex, index) => {
-        // Handle different possible structures from API
-        // Wger API structure: exercises have 'name' property, but might be nested
+    // Create exercise cards with proper styling
+    exercises.forEach((exercise, index) => {
+        // Extract exercise name from the API response
         let exerciseName = 'Unnamed Exercise';
         
-        if (typeof ex === 'string') {
-            exerciseName = ex;
-        } else if (ex && typeof ex === 'object') {
-            exerciseName = ex.name || ex.name_en || ex.name_de || ex.title || `Exercise ${index + 1}`;
+        if (typeof exercise === 'string') {
+            exerciseName = exercise;
+        } else if (exercise && typeof exercise === 'object') {
+            // Wger API returns exercises with 'name' property
+            exerciseName = exercise.name || 
+                          exercise.name_en || 
+                          exercise.title || 
+                          `Exercise ${index + 1}`;
         }
         
-        const li = document.createElement('li');
-        li.textContent = exerciseName;
-        li.style.padding = '0.75rem';
-        li.style.marginBottom = '0.5rem';
-        li.style.background = 'var(--bg-light-blue)';
-        li.style.borderRadius = '8px';
-        li.style.borderLeft = '3px solid var(--primary-blue)';
-        li.style.color = 'var(--text-dark)';
-        li.style.fontWeight = '500';
-        ul.appendChild(li);
+        // Create exercise card
+        const card = document.createElement('div');
+        card.style.cssText = `
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            background: var(--bg-light-blue);
+            border-left: 4px solid var(--primary-blue);
+            border-radius: 8px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        `;
+        
+        card.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="
+                    background: var(--primary-blue);
+                    color: white;
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    flex-shrink: 0;
+                ">
+                    ${index + 1}
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; color: var(--text-dark); font-size: 1rem;">
+                        ${escapeHtml(exerciseName)}
+                    </div>
+                    ${exercise.description ? `
+                        <div style="color: var(--text-light); font-size: 0.85rem; margin-top: 0.25rem;">
+                            ${escapeHtml(stripHtmlTags(exercise.description)).substring(0, 100)}...
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        
+        // Add hover effect
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateX(5px)';
+            card.style.boxShadow = '0 2px 8px rgba(37, 99, 235, 0.2)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateX(0)';
+            card.style.boxShadow = 'none';
+        });
+        
+        container.appendChild(card);
     });
     
-    container.appendChild(ul);
+    // Add success message
+    const successMsg = document.createElement('p');
+    successMsg.style.cssText = `
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background: var(--bg-light-green);
+        color: var(--primary-green);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        text-align: center;
+    `;
+    successMsg.innerHTML = '✓ Exercises loaded successfully from Wger API';
+    container.appendChild(successMsg);
+}
+
+/**
+ * Strip HTML tags from string (for descriptions)
+ * @param {string} html - HTML string
+ * @returns {string} - Plain text
+ */
+function stripHtmlTags(html) {
+    if (!html) return '';
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
 }
 
 /**
@@ -188,14 +254,14 @@ function displayExercises(exercises, container) {
  */
 function showFallbackExercises(container) {
     const fallbackExercises = [
-        { name: 'Push-ups' },
-        { name: 'Squats' },
-        { name: 'Plank' },
-        { name: 'Lunges' },
-        { name: 'Pull-ups' }
+        { name: 'Push-ups', description: 'Upper body bodyweight exercise' },
+        { name: 'Squats', description: 'Lower body compound exercise' },
+        { name: 'Plank', description: 'Core stability exercise' },
+        { name: 'Lunges', description: 'Lower body unilateral exercise' },
+        { name: 'Pull-ups', description: 'Upper body pulling exercise' }
     ];
     
-    container.innerHTML = '<p style="color: var(--text-light); margin-bottom: 1rem;">Could not load exercises from API. Showing fallback exercises:</p>';
+    container.innerHTML = '<p style="color: var(--text-light); margin-bottom: 1rem; padding: 0.75rem; background: #FEF9C3; border-radius: 8px;">⚠ Could not load exercises from API. Showing fallback exercises:</p>';
     displayExercises(fallbackExercises, container);
 }
 
